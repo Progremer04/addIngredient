@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Ingredients</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .delete-button {
+            background-color: #ff3333;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        .delete-button:hover {
+            background-color: #cc0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Create a Recipe</h1>
+        <form id="recipeForm">
+            <label for="dishName">Dish Name:</label>
+            <input type="text" id="dishName" required>
+            
+            <label for="ingredient">Ingredient:</label>
+            <input type="text" id="ingredient" required>
+
+            <label for="name">اسم انسان الذي شيستريها</label>
+            <input type="text" id="name" required>
+            <button type="button" onclick="addIngredient()">Add Ingredient</button>
+
+            <h2>Ingredients:</h2>
+            <ul id="ingredientList"></ul>
+        </form>
+    </div>
+
+    <script>
+        // Load saved data from local storage
+        document.addEventListener('DOMContentLoaded', function() {
+            loadIngredients();
+        });
+
+        function addIngredient() {
+            var dishNameInput = document.getElementById("dishName");
+            var ingredientInput = document.getElementById("ingredient");
+            var name = document.getElementById("name");
+            var ingredientList = document.getElementById("ingredientList");
+
+            if (dishNameInput.value.trim() === "") {
+                alert("Please enter a dish name.");
+                return;
+            }
+
+            if (ingredientInput.value.trim() !== "") {
+                var listItem = document.createElement("li");
+                listItem.innerHTML = `<span>${dishNameInput.value}:</span> ${ingredientInput.value} <span>${name.value}</span> <button class="delete-button" onclick="deleteIngredient(this)">Delete</button>`;
+                ingredientList.appendChild(listItem);
+                ingredientInput.value = "";
+
+                // Save data to local storage
+                saveIngredients();
+            }
+        }
+
+        function deleteIngredient(button) {
+            var listItem = button.parentElement;
+            listItem.remove();
+
+            // Save data to local storage after deletion
+            saveIngredients();
+        }
+
+        function saveIngredients() {
+            var ingredients = [];
+            var ingredientList = document.getElementById("ingredientList");
+            var listItems = ingredientList.getElementsByTagName("li");
+
+            for (var i = 0; i < listItems.length; i++) {
+                ingredients.push(listItems[i].innerHTML);
+            }
+
+            // Save the data to local storage
+            localStorage.setItem('ingredients', JSON.stringify(ingredients));
+        }
+
+        function loadIngredients() {
+            var ingredientList = document.getElementById("ingredientList");
+            var storedIngredients = localStorage.getItem('ingredients');
+
+            if (storedIngredients) {
+                var ingredients = JSON.parse(storedIngredients);
+
+                for (var i = 0; i < ingredients.length; i++) {
+                    var listItem = document.createElement("li");
+                    listItem.innerHTML = ingredients[i];
+                    ingredientList.appendChild(listItem);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
